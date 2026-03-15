@@ -103,6 +103,21 @@
     border: 1px solid #ff003c;
     box-shadow: 0 0 5px #ff003c, inset 0 0 5px #ff003c;
   }
+
+  .bg-grid {
+    background-size: 50px 50px;
+    background-image: linear-gradient(to right, rgba(0, 240, 255, 0.05) 1px, transparent 1px),
+      linear-gradient(to bottom, rgba(0, 240, 255, 0.05) 1px, transparent 1px);
+  }
+
+  @keyframes scan {
+    0% { transform: translateY(-100%); }
+    100% { transform: translateY(1000%); }
+  }
+
+  .animate-scan {
+    animation: scan 3s linear infinite;
+  }
 }
 
 body {
