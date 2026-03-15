@@ -16,7 +16,7 @@ const AccessPage = () => {
   const [accessGranted, setAccessGranted] = useState(false);
   const navigate = useNavigate();
 
-  const WEBHOOK_URL = 'https://alpha-hacker.app.n8n.cloud/webhook-test/12324a51-b730-4be6-9761-23037a436aa0';
+  const WEBHOOK_URL = 'https://alpha-hacker.app.n8n.cloud/webhook/live';
 
   const handleChange = (e) => {
     const { name, value } = e.target;
