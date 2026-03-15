@@ -11,7 +11,8 @@ const MatrixBackground = () => {
     canvas.height = window.innerHeight;
 
     const characters = '01ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789@#$%^&*()';
-    const fontSize = 14;
+    const isMobile = window.innerWidth < 768;
+    const fontSize = isMobile ? 20 : 14; // Larger font on mobile = fewer columns to render
     const columns = Math.floor(canvas.width / fontSize);
 
     const drops = [];
@@ -39,7 +40,8 @@ const MatrixBackground = () => {
       }
     };
 
-    const intervalId = setInterval(draw, 33);
+    const frameRate = isMobile ? 50 : 33; // Slower refresh on mobile to save CPU
+    const intervalId = setInterval(draw, frameRate);
 
     const handleResize = () => {
       canvas.width = window.innerWidth;

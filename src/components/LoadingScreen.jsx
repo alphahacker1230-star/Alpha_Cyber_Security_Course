@@ -47,7 +47,7 @@ const LoadingScreen = () => {
         transition={{ duration: 0.5 }}
         className="text-center mb-12"
       >
-        <h1 className="text-4xl md:text-7xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-neonCyan to-electricRed glitch" data-text="ALPHA CYBER SECURITY">
+        <h1 className="text-4xl md:text-7xl font-bold bg-clip-text text-transparent bg-linear-to-r from-neonCyan to-electricRed glitch" data-text="ALPHA CYBER SECURITY">
           ALPHA CYBER SECURITY
         </h1>
       </motion.div>

@@ -50,10 +50,10 @@ const CourseHome = () => {
           animate={{ opacity: 1, y: 0 }}
           className="mb-12 border-l-4 border-neonCyan pl-6 py-2"
         >
-          <h1 className="text-4xl md:text-5xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-white to-neonCyan mb-4 uppercase tracking-wider">
+          <h1 className="text-2xl md:text-4xl lg:text-5xl font-bold bg-clip-text text-transparent bg-linear-to-r from-white to-neonCyan mb-2 md:mb-4 uppercase tracking-wider leading-tight">
             ALPHA CYBER SECURITY TRAINING
           </h1>
-          <p className="text-gray-400 font-mono max-w-3xl leading-relaxed text-sm md:text-base">
+          <p className="text-gray-400 font-mono max-w-3xl leading-relaxed text-xs md:text-sm lg:text-base">
             &gt; SYSTEM_READY. <br/>
             Welcome operative. Engage in elite cyber warfare modules designed to test and forge your tactical digital skills. From basic cryptography to advanced exploitation, complete modules to elevate your clearance level.
           </p>

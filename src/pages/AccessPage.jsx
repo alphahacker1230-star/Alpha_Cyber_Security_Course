@@ -114,67 +114,67 @@ const AccessPage = () => {
             </div>
 
             <form onSubmit={handleSubmit} className="space-y-5 font-mono">
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div className="group">
-                  <label className="block text-neonCyan text-[10px] mb-1 group-hover:text-electricRed transition-colors tracking-widest uppercase">ID_FIRST_NAME</label>
+                  <label className="block text-neonCyan text-[10px] md:text-xs mb-1 group-hover:text-electricRed transition-colors tracking-widest uppercase">ID_FIRST_NAME</label>
                   <input 
                     type="text" 
                     name="firstName"
                     autoComplete="off"
                     value={formData.firstName}
                     onChange={handleChange}
-                    className={`w-full bg-deepBlue/30 border-b-2 ${errors.firstName ? 'border-electricRed' : 'border-neonCyan'} text-white p-2 focus:outline-none focus:bg-white/5 transition-all outline-none`}
+                    className={`w-full min-h-[44px] bg-deepBlue/30 border-b-2 ${errors.firstName ? 'border-electricRed' : 'border-neonCyan'} text-white p-2 md:p-3 focus:outline-none focus:bg-white/5 transition-all outline-none`}
                     placeholder="REQUIRED"
                   />
                 </div>
                 <div className="group">
-                  <label className="block text-neonCyan text-[10px] mb-1 group-hover:text-electricRed transition-colors tracking-widest uppercase">ID_LAST_NAME</label>
+                  <label className="block text-neonCyan text-[10px] md:text-xs mb-1 group-hover:text-electricRed transition-colors tracking-widest uppercase">ID_LAST_NAME</label>
                   <input 
                     type="text" 
                     name="lastName"
                     autoComplete="off"
                     value={formData.lastName}
                     onChange={handleChange}
-                    className={`w-full bg-deepBlue/30 border-b-2 ${errors.lastName ? 'border-electricRed' : 'border-neonCyan'} text-white p-2 focus:outline-none focus:bg-white/5 transition-all outline-none`}
+                    className={`w-full min-h-[44px] bg-deepBlue/30 border-b-2 ${errors.lastName ? 'border-electricRed' : 'border-neonCyan'} text-white p-2 md:p-3 focus:outline-none focus:bg-white/5 transition-all outline-none`}
                     placeholder="REQUIRED"
                   />
                 </div>
               </div>
 
-              <div className="group">
-                <label className="block text-neonCyan text-[10px] mb-1 group-hover:text-electricRed transition-colors tracking-widest uppercase">ENCRYPTED_EMAIL_ADDR</label>
+              <div className="group mt-4 md:mt-0">
+                <label className="block text-neonCyan text-[10px] md:text-xs mb-1 group-hover:text-electricRed transition-colors tracking-widest uppercase">ENCRYPTED_EMAIL_ADDR</label>
                 <input 
                   type="email" 
                   name="email"
                   autoComplete="off"
                   value={formData.email}
                   onChange={handleChange}
-                  className={`w-full bg-deepBlue/30 border-b-2 ${errors.email ? 'border-electricRed' : 'border-neonCyan'} text-white p-2 focus:outline-none focus:bg-white/5 transition-all outline-none`}
+                  className={`w-full min-h-[44px] bg-deepBlue/30 border-b-2 ${errors.email ? 'border-electricRed' : 'border-neonCyan'} text-white p-2 md:p-3 focus:outline-none focus:bg-white/5 transition-all outline-none`}
                   placeholder="USER@NETWORK.CORE"
                 />
               </div>
 
-              <div className="group">
-                <label className="block text-neonCyan text-[10px] mb-1 group-hover:text-electricRed transition-colors tracking-widest uppercase">CONTACT_PROTOCOL_PHONE</label>
+              <div className="group mt-4 md:mt-0">
+                <label className="block text-neonCyan text-[10px] md:text-xs mb-1 group-hover:text-electricRed transition-colors tracking-widest uppercase">CONTACT_PROTOCOL_PHONE</label>
                 <input 
                   type="tel" 
                   name="phone"
                   autoComplete="off"
                   value={formData.phone}
                   onChange={handleChange}
-                  className={`w-full bg-deepBlue/30 border-b-2 ${errors.phone ? 'border-electricRed' : 'border-neonCyan'} text-white p-2 focus:outline-none focus:bg-white/5 transition-all outline-none`}
+                  className={`w-full min-h-[44px] bg-deepBlue/30 border-b-2 ${errors.phone ? 'border-electricRed' : 'border-neonCyan'} text-white p-2 md:p-3 focus:outline-none focus:bg-white/5 transition-all outline-none`}
                   placeholder="+X XXX-XXX-XXXX"
                 />
               </div>
 
-              <div className="group">
-                <label className="block text-neonCyan text-[10px] mb-1 group-hover:text-electricRed transition-colors tracking-widest uppercase">TEMPORAL_MARK_DOB</label>
+              <div className="group mt-4 md:mt-0">
+                <label className="block text-neonCyan text-[10px] md:text-xs mb-1 group-hover:text-electricRed transition-colors tracking-widest uppercase">TEMPORAL_MARK_DOB</label>
                 <input 
                   type="date" 
                   name="dob"
                   value={formData.dob}
                   onChange={handleChange}
-                  className={`w-full bg-deepBlue/30 border-b-2 ${errors.dob ? 'border-electricRed' : 'border-neonCyan'} text-white p-2 focus:outline-none focus:bg-white/5 transition-all outline-none [color-scheme:dark]`}
+                  className={`w-full min-h-[44px] bg-deepBlue/30 border-b-2 ${errors.dob ? 'border-electricRed' : 'border-neonCyan'} text-white p-2 md:p-3 focus:outline-none focus:bg-white/5 transition-all outline-none [color-scheme:dark]`}
                 />
               </div>
 

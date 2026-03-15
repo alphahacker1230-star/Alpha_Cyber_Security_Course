@@ -113,7 +113,7 @@ const AdminDashboard = () => {
 
         {/* Edit Modal */}
         {editingCourse && (
-          <div className="fixed inset-0 z-[120] bg-black/90 flex justify-center items-center p-4">
+          <div className="fixed inset-0 z-120 bg-black/90 flex justify-center items-center p-4">
             <div className="bg-black border-2 border-neonCyan neon-box-cyan w-full max-w-3xl max-h-[90vh] overflow-y-auto">
               <div className="flex justify-between p-4 border-b border-neonCyan/30">
                 <h2 className="text-neonCyan text-xl font-bold uppercase">

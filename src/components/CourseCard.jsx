@@ -13,7 +13,7 @@ const CourseCard = ({ course, onClick }) => {
       className="group relative bg-deepBlue/80 border border-neonCyan/30 p-1 cursor-pointer overflow-hidden rounded-sm hover:neon-box-cyan transition-all"
       onClick={() => onClick(course)}
     >
-      <div className="absolute inset-0 bg-gradient-to-t from-black via-transparent to-transparent z-10" />
+      <div className="absolute inset-0 bg-linear-to-t from-black via-transparent to-transparent z-10" />
       
       <div className="relative h-48 w-full overflow-hidden">
         <img 
@@ -28,10 +28,10 @@ const CourseCard = ({ course, onClick }) => {
       <div className="relative z-20 p-4">
         <div className="flex items-center gap-2 mb-2">
           <Terminal className="w-4 h-4 text-neonCyan" />
-          <span className="text-xs text-neonCyan font-mono tracking-widest uppercase">MODULE_{course.id}</span>
+          <span className="text-[10px] md:text-xs text-neonCyan font-mono tracking-widest uppercase">MODULE_{course.id}</span>
         </div>
-        <h3 className="text-lg font-bold text-white mb-2 group-hover:neon-text-cyan transition-colors line-clamp-1">{course.title}</h3>
-        <p className="text-sm text-gray-400 line-clamp-2">{course.description}</p>
+        <h3 className="text-base md:text-lg font-bold text-white mb-2 group-hover:neon-text-cyan transition-colors line-clamp-1">{course.title}</h3>
+        <p className="text-xs md:text-sm text-gray-400 line-clamp-2">{course.description}</p>
       </div>
 
       {/* Decorative corners */}
