@@ -1,14 +1,28 @@
-import React, { useState } from 'react';
-import { Link, useLocation } from 'react-router-dom';
-import { Shield, Terminal, Settings, LogOut, Menu, X } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
+import { Shield, Terminal, Settings, LogOut, Menu, X, User } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { supabase } from '../lib/supabaseClient';
 
 const Navbar = () => {
   const location = useLocation();
+  const navigate = useNavigate();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [user, setUser] = useState(null);
 
-  const handleLogout = () => {
+  useEffect(() => {
+    supabase.auth.getUser().then(({ data }) => {
+      if (data?.user) {
+        setUser(data.user);
+      }
+    });
+  }, []);
+
+  const handleLogout = async (e) => {
+    e.preventDefault();
+    await supabase.auth.signOut();
     localStorage.removeItem('access_granted');
+    navigate('/login');
   };
 
   const closeMobileMenu = () => setIsMobileMenuOpen(false);
@@ -42,24 +56,38 @@ const Navbar = () => {
               <Settings className="w-4 h-4" />
               <span>SYSTEM_CONFIG</span>
             </Link>
-            <Link 
-              to="/access" 
+            <button 
               onClick={handleLogout}
-              className="flex items-center gap-2 text-gray-500 hover:text-red-500 py-2 transition-colors"
+              className="flex items-center gap-2 text-gray-500 hover:text-red-500 py-2 transition-colors cursor-pointer focus:outline-none bg-transparent border-none"
             >
               <LogOut className="w-4 h-4" />
               <span>ABORT</span>
-            </Link>
+            </button>
           </div>
 
-          {/* Mobile Menu Button */}
-          <div className="md:hidden flex items-center">
+          {/* User Info & Mobile Menu Button */}
+          <div className="flex items-center gap-4">
+            {user && (
+              <div className="hidden md:flex items-center gap-2 border border-neonCyan/30 bg-black/50 px-3 py-1.5 rounded-sm">
+                {user.user_metadata?.avatar_url ? (
+                  <img src={user.user_metadata.avatar_url} alt="avatar" className="w-6 h-6 rounded-full border border-neonCyan" />
+                ) : (
+                  <User className="w-5 h-5 text-neonCyan" />
+                )}
+                <div className="flex flex-col">
+                  <span className="text-xs text-neonCyan font-bold truncate max-w-[100px]">{user.user_metadata?.full_name || 'OPERATIVE'}</span>
+                </div>
+              </div>
+            )}
+            
+            <div className="md:hidden flex items-center">
             <button 
               onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
               className="text-neonCyan hover:text-electricRed p-2 min-h-[44px] min-w-[44px] flex items-center justify-center transition-colors focus:outline-none"
             >
               {isMobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
             </button>
+            </div>
           </div>
         </div>
       </div>
@@ -90,15 +118,30 @@ const Navbar = () => {
                 <Settings className="w-5 h-5" />
                 <span className="text-lg">SYSTEM_CONFIG</span>
               </Link>
-              <Link 
-                to="/access" 
-                onClick={() => { handleLogout(); closeMobileMenu(); }}
-                className="flex items-center gap-3 p-3 text-red-500/80 hover:text-red-500 hover:bg-red-500/10 transition-colors"
+              <button 
+                onClick={(e) => { handleLogout(e); closeMobileMenu(); }}
+                className="w-full flex items-center gap-3 p-3 text-red-500/80 hover:text-red-500 hover:bg-red-500/10 transition-colors cursor-pointer bg-transparent border-none text-left"
               >
                 <LogOut className="w-5 h-5" />
                 <span className="text-lg">ABORT</span>
-              </Link>
+              </button>
             </div>
+            
+            {user && (
+              <div className="px-4 pb-4 pt-2 border-t border-neonCyan/20">
+                <div className="flex items-center gap-3 text-gray-400">
+                  {user.user_metadata?.avatar_url ? (
+                    <img src={user.user_metadata.avatar_url} alt="avatar" className="w-8 h-8 rounded-full border border-neonCyan" />
+                  ) : (
+                    <User className="w-8 h-8 text-neonCyan" />
+                  )}
+                  <div>
+                    <div className="text-sm text-neonCyan font-bold">{user.user_metadata?.full_name || 'OPERATIVE'}</div>
+                    <div className="text-xs">{user.email}</div>
+                  </div>
+                </div>
+              </div>
+            )}
           </motion.div>
         )}
       </AnimatePresence>

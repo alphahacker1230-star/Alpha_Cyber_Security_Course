@@ -4,6 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import { Fingerprint, AlertCircle, ShieldCheck, Loader2 } from 'lucide-react';
 
 const AccessPage = () => {
+  const [step, setStep] = useState(1);
   const [formData, setFormData] = useState({
     firstName: '',
     lastName: '',
@@ -26,55 +27,65 @@ const AccessPage = () => {
     }
   };
 
-  const validate = () => {
+  const validateStep = () => {
     let tempErrors = {};
-    if (!formData.firstName) tempErrors.firstName = 'REQUIRED_FIELD';
-    if (!formData.lastName) tempErrors.lastName = 'REQUIRED_FIELD';
-    if (!formData.email) tempErrors.email = 'REQUIRED_FIELD';
-    else if (!/\S+@\S+\.\S+/.test(formData.email)) tempErrors.email = 'INVALID_FORMAT';
-    if (!formData.phone) tempErrors.phone = 'REQUIRED_FIELD';
-    if (!formData.dob) tempErrors.dob = 'REQUIRED_FIELD';
+    if (step === 1) {
+      if (!formData.firstName) tempErrors.firstName = 'REQUIRED_FIELD';
+      if (!formData.email) tempErrors.email = 'REQUIRED_FIELD';
+      else if (!/\S+@\S+\.\S+/.test(formData.email)) tempErrors.email = 'INVALID_FORMAT';
+    }
+    if (step === 2) {
+      if (!formData.lastName) tempErrors.lastName = 'REQUIRED_FIELD';
+    }
+    if (step === 3) {
+      if (!formData.phone) tempErrors.phone = 'REQUIRED_FIELD';
+    }
+    if (step === 4) {
+      if (!formData.dob) tempErrors.dob = 'REQUIRED_FIELD';
+    }
     
     setErrors(tempErrors);
     return Object.keys(tempErrors).length === 0;
   };
 
-  const handleSubmit = async (e) => {
+  const handleNext = (e) => {
     e.preventDefault();
-    if (validate()) {
-      setIsSubmitting(true);
-      try {
-        const response = await fetch(WEBHOOK_URL, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify(formData),
-        });
-
-        if (response.ok || response.status === 200) {
-          localStorage.setItem('access_granted', 'true');
-          localStorage.setItem('user_data', JSON.stringify(formData));
-          setAccessGranted(true);
-          
-          setTimeout(() => {
-            navigate('/course');
-          }, 3000);
-        } else {
-          setErrors({ submit: 'SYSTEM_ERROR: WEBHOOK_UNREACHABLE' });
-        }
-      } catch (error) {
-        setErrors({ submit: 'CONNECTION_REFUSED: NETWORK_FAILURE' });
-        // Fallback for demo purposes if webhook fails but we want to show the flow
-        // Uncomment if you want it to proceed even if webhook fails
-        /*
-        localStorage.setItem('access_granted', 'true');
-        setAccessGranted(true);
-        setTimeout(() => navigate('/course'), 3000);
-        */
-      } finally {
-        setIsSubmitting(false);
+    if (validateStep()) {
+      if (step < 4) {
+        setStep(step + 1);
+      } else {
+        handleSubmit(e);
       }
+    }
+  };
+
+  const handleSubmit = async (e) => {
+    if (e) e.preventDefault();
+    setIsSubmitting(true);
+    try {
+      const response = await fetch(WEBHOOK_URL, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(formData),
+      });
+
+      if (response.ok || response.status === 200) {
+        localStorage.setItem('access_granted', 'true');
+        localStorage.setItem('user_data', JSON.stringify(formData));
+        setAccessGranted(true);
+        
+        setTimeout(() => {
+          navigate('/login'); // Redirect to login as per plan
+        }, 3000);
+      } else {
+        setErrors({ submit: 'SYSTEM_ERROR: WEBHOOK_UNREACHABLE' });
+      }
+    } catch (error) {
+      setErrors({ submit: 'CONNECTION_REFUSED: NETWORK_FAILURE' });
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -107,75 +118,139 @@ const AccessPage = () => {
               <h2 className="text-2xl md:text-3xl font-bold glitch text-white uppercase tracking-tighter" data-text="ALPHA CYBER SECURITY ACCESS TERMINAL">
                 ALPHA CYBER SECURITY <span className="text-neonCyan">ACCESS</span> <span className="text-electricRed">TERMINAL</span>
               </h2>
-              <div className="h-1 w-full bg-gradient-to-r from-electricRed via-neonCyan to-electricRed mt-4 opacity-50" />
+              <div className="h-1 w-full bg-linear-to-r from-electricRed via-neonCyan to-electricRed mt-4 opacity-50" />
               <p className="text-gray-400 font-mono mt-4 text-xs tracking-[0.2em] animate-pulse">
                 [ STATUS: WAITING_FOR_INPUT ]
               </p>
             </div>
 
-            <form onSubmit={handleSubmit} className="space-y-5 font-mono">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div className="group">
-                  <label className="block text-neonCyan text-[10px] md:text-xs mb-1 group-hover:text-electricRed transition-colors tracking-widest uppercase">ID_FIRST_NAME</label>
-                  <input 
-                    type="text" 
-                    name="firstName"
-                    autoComplete="off"
-                    value={formData.firstName}
-                    onChange={handleChange}
-                    className={`w-full min-h-[44px] bg-deepBlue/30 border-b-2 ${errors.firstName ? 'border-electricRed' : 'border-neonCyan'} text-white p-2 md:p-3 focus:outline-none focus:bg-white/5 transition-all outline-none`}
-                    placeholder="REQUIRED"
+            {/* Step Progress Dots */}
+            <div className="flex items-center justify-center gap-2 mb-6">
+              {[1, 2, 3, 4].map(s => (
+                <div key={s} className="flex items-center gap-2">
+                  <motion.div
+                    animate={s === step ? { scale: [1, 1.2, 1] } : {}}
+                    transition={{ duration: 0.8, repeat: Infinity }}
+                    className={`w-2.5 h-2.5 rounded-full border transition-all duration-300 ${
+                      s < step ? 'bg-neonCyan border-neonCyan' :
+                      s === step ? 'border-electricRed bg-electricRed/30 shadow-[0_0_8px_#ff003c]' :
+                      'border-gray-700 bg-transparent'
+                    }`}
                   />
+                  {s < 4 && <div className={`w-8 h-px transition-all duration-300 ${s < step ? 'bg-neonCyan' : 'bg-gray-700'}`} />}
                 </div>
-                <div className="group">
-                  <label className="block text-neonCyan text-[10px] md:text-xs mb-1 group-hover:text-electricRed transition-colors tracking-widest uppercase">ID_LAST_NAME</label>
-                  <input 
-                    type="text" 
-                    name="lastName"
-                    autoComplete="off"
-                    value={formData.lastName}
-                    onChange={handleChange}
-                    className={`w-full min-h-[44px] bg-deepBlue/30 border-b-2 ${errors.lastName ? 'border-electricRed' : 'border-neonCyan'} text-white p-2 md:p-3 focus:outline-none focus:bg-white/5 transition-all outline-none`}
-                    placeholder="REQUIRED"
-                  />
-                </div>
-              </div>
+              ))}
+            </div>
+            <p className="font-mono text-xs text-gray-500 text-center mb-6 tracking-widest uppercase">
+              STEP {step} / 4 — {['NAME & EMAIL', 'LAST NAME', 'PHONE', 'DATE OF BIRTH'][step - 1]}
+            </p>
 
-              <div className="group mt-4 md:mt-0">
-                <label className="block text-neonCyan text-[10px] md:text-xs mb-1 group-hover:text-electricRed transition-colors tracking-widest uppercase">ENCRYPTED_EMAIL_ADDR</label>
-                <input 
-                  type="email" 
-                  name="email"
-                  autoComplete="off"
-                  value={formData.email}
-                  onChange={handleChange}
-                  className={`w-full min-h-[44px] bg-deepBlue/30 border-b-2 ${errors.email ? 'border-electricRed' : 'border-neonCyan'} text-white p-2 md:p-3 focus:outline-none focus:bg-white/5 transition-all outline-none`}
-                  placeholder="USER@NETWORK.CORE"
-                />
-              </div>
+            <form onSubmit={handleNext} className="space-y-5 font-mono">
+              <div className="min-h-[120px]">
+                <AnimatePresence mode="wait">
+                  {step === 1 && (
+                    <motion.div
+                      key="step1"
+                      initial={{ opacity: 0, x: 20 }}
+                      animate={{ opacity: 1, x: 0 }}
+                      exit={{ opacity: 0, x: -20 }}
+                      className="space-y-4"
+                    >
+                      <div className="group">
+                        <label className="block text-neonCyan text-[10px] md:text-xs mb-1 group-hover:text-electricRed transition-colors tracking-widest uppercase">ID_FIRST_NAME</label>
+                        <input 
+                          type="text" 
+                          name="firstName"
+                          autoFocus
+                          autoComplete="off"
+                          value={formData.firstName}
+                          onChange={handleChange}
+                          className={`w-full min-h-[44px] bg-deepBlue/30 border-b-2 ${errors.firstName ? 'border-electricRed' : 'border-neonCyan'} text-white p-2 md:p-3 focus:outline-none focus:bg-white/5 transition-all outline-none`}
+                          placeholder="REQUIRED"
+                        />
+                      </div>
+                      <div className="group">
+                        <label className="block text-neonCyan text-[10px] md:text-xs mb-1 group-hover:text-electricRed transition-colors tracking-widest uppercase">ENCRYPTED_EMAIL_ADDR</label>
+                        <input 
+                          type="email" 
+                          name="email"
+                          autoComplete="off"
+                          value={formData.email}
+                          onChange={handleChange}
+                          className={`w-full min-h-[44px] bg-deepBlue/30 border-b-2 ${errors.email ? 'border-electricRed' : 'border-neonCyan'} text-white p-2 md:p-3 focus:outline-none focus:bg-white/5 transition-all outline-none`}
+                          placeholder="USER@NETWORK.CORE"
+                        />
+                      </div>
+                    </motion.div>
+                  )}
 
-              <div className="group mt-4 md:mt-0">
-                <label className="block text-neonCyan text-[10px] md:text-xs mb-1 group-hover:text-electricRed transition-colors tracking-widest uppercase">CONTACT_PROTOCOL_PHONE</label>
-                <input 
-                  type="tel" 
-                  name="phone"
-                  autoComplete="off"
-                  value={formData.phone}
-                  onChange={handleChange}
-                  className={`w-full min-h-[44px] bg-deepBlue/30 border-b-2 ${errors.phone ? 'border-electricRed' : 'border-neonCyan'} text-white p-2 md:p-3 focus:outline-none focus:bg-white/5 transition-all outline-none`}
-                  placeholder="+X XXX-XXX-XXXX"
-                />
-              </div>
+                  {step === 2 && (
+                    <motion.div
+                      key="step2"
+                      initial={{ opacity: 0, x: 20 }}
+                      animate={{ opacity: 1, x: 0 }}
+                      exit={{ opacity: 0, x: -20 }}
+                    >
+                      <div className="group">
+                        <label className="block text-neonCyan text-[10px] md:text-xs mb-1 group-hover:text-electricRed transition-colors tracking-widest uppercase">ID_LAST_NAME</label>
+                        <input 
+                          type="text" 
+                          name="lastName"
+                          autoFocus
+                          autoComplete="off"
+                          value={formData.lastName}
+                          onChange={handleChange}
+                          className={`w-full min-h-[44px] bg-deepBlue/30 border-b-2 ${errors.lastName ? 'border-electricRed' : 'border-neonCyan'} text-white p-2 md:p-3 focus:outline-none focus:bg-white/5 transition-all outline-none`}
+                          placeholder="REQUIRED"
+                        />
+                      </div>
+                    </motion.div>
+                  )}
 
-              <div className="group mt-4 md:mt-0">
-                <label className="block text-neonCyan text-[10px] md:text-xs mb-1 group-hover:text-electricRed transition-colors tracking-widest uppercase">TEMPORAL_MARK_DOB</label>
-                <input 
-                  type="date" 
-                  name="dob"
-                  value={formData.dob}
-                  onChange={handleChange}
-                  className={`w-full min-h-[44px] bg-deepBlue/30 border-b-2 ${errors.dob ? 'border-electricRed' : 'border-neonCyan'} text-white p-2 md:p-3 focus:outline-none focus:bg-white/5 transition-all outline-none [color-scheme:dark]`}
-                />
+                  {step === 3 && (
+                    <motion.div
+                      key="step3"
+                      initial={{ opacity: 0, x: 20 }}
+                      animate={{ opacity: 1, x: 0 }}
+                      exit={{ opacity: 0, x: -20 }}
+                    >
+                      <div className="group">
+                        <label className="block text-neonCyan text-[10px] md:text-xs mb-1 group-hover:text-electricRed transition-colors tracking-widest uppercase">CONTACT_PROTOCOL_PHONE</label>
+                        <input 
+                          type="tel" 
+                          name="phone"
+                          autoFocus
+                          autoComplete="off"
+                          value={formData.phone}
+                          onChange={handleChange}
+                          className={`w-full min-h-[44px] bg-deepBlue/30 border-b-2 ${errors.phone ? 'border-electricRed' : 'border-neonCyan'} text-white p-2 md:p-3 focus:outline-none focus:bg-white/5 transition-all outline-none`}
+                          placeholder="+X XXX-XXX-XXXX"
+                        />
+                      </div>
+                    </motion.div>
+                  )}
+
+                  {step === 4 && (
+                    <motion.div
+                      key="step4"
+                      initial={{ opacity: 0, x: 20 }}
+                      animate={{ opacity: 1, x: 0 }}
+                      exit={{ opacity: 0, x: -20 }}
+                    >
+                      <div className="group">
+                        <label className="block text-neonCyan text-[10px] md:text-xs mb-1 group-hover:text-electricRed transition-colors tracking-widest uppercase">TEMPORAL_MARK_DOB</label>
+                        <input 
+                          type="date" 
+                          name="dob"
+                          autoFocus
+                          value={formData.dob}
+                          onChange={handleChange}
+                          className={`w-full min-h-[44px] bg-deepBlue/30 border-b-2 ${errors.dob ? 'border-electricRed' : 'border-neonCyan'} text-white p-2 md:p-3 focus:outline-none focus:bg-white/5 transition-all outline-none scheme-dark`}
+                        />
+                      </div>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
               </div>
 
               {errors.submit && (
@@ -184,19 +259,32 @@ const AccessPage = () => {
                 </div>
               )}
 
-              <motion.button
-                whileHover={{ scale: 1.05, boxShadow: "0 0 20px rgba(0,240,255,0.4)" }}
-                whileTap={{ scale: 0.95 }}
-                type="submit"
-                disabled={isSubmitting}
-                className="w-full mt-8 bg-black border-2 border-neonCyan text-white p-4 font-bold uppercase tracking-[0.3em] overflow-hidden relative group"
-              >
-                <span className="relative z-10 flex items-center justify-center gap-2">
-                  {isSubmitting ? <Loader2 className="animate-spin" /> : 'ACCESS COURSE'}
-                </span>
-                <div className="absolute inset-0 bg-neonCyan/20 translate-y-full group-hover:translate-y-0 transition-transform duration-300" />
-                <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-1000" />
-              </motion.button>
+              <div className="flex gap-4">
+                {step > 1 && (
+                  <motion.button
+                    whileHover={{ scale: 1.05 }}
+                    whileTap={{ scale: 0.95 }}
+                    type="button"
+                    onClick={() => setStep(step - 1)}
+                    className="flex-1 mt-8 bg-black border-2 border-gray-500 text-gray-500 p-4 font-bold uppercase tracking-[0.3em]"
+                  >
+                    Back
+                  </motion.button>
+                )}
+                <motion.button
+                  whileHover={{ scale: 1.05, boxShadow: "0 0 20px rgba(0,240,255,0.4)" }}
+                  whileTap={{ scale: 0.95 }}
+                  type="submit"
+                  disabled={isSubmitting}
+                  className="flex-2 mt-8 bg-black border-2 border-neonCyan text-white p-4 font-bold uppercase tracking-[0.3em] overflow-hidden relative group"
+                >
+                  <span className="relative z-10 flex items-center justify-center gap-2">
+                    {isSubmitting ? <Loader2 className="animate-spin" /> : (step === 4 ? 'FINISH →' : 'NEXT →')}
+                  </span>
+                  <div className="absolute inset-0 bg-neonCyan/20 translate-y-full group-hover:translate-y-0 transition-transform duration-300" />
+                  <div className="absolute inset-0 bg-linear-to-r from-transparent via-white/10 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-1000" />
+                </motion.button>
+              </div>
             </form>
 
             <div className="mt-8 text-[8px] text-gray-600 font-mono text-center opacity-50">
